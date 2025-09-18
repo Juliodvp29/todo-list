@@ -1,13 +1,25 @@
 <div class="sidebar">
-  <div class="sidebar__title">Listas</div>
+  <div class="sidebar__header">
+    <div class="sidebar__title">TaskFlow</div>
+    <div class="sidebar__subtitle">Organiza tu día</div>
+  </div>
+
   <nav class="sidebar__nav">
     <ul>
-      <li>Pendientes</li>
-      <li>Trabajo</li>
-      <li>Compras</li>
+      @for (list of lists; track $index) {
+      <li [class.active]="list.active" (click)="selectList($index)" class="animate-slideInLeft"
+        [style.animation-delay]="$index * 0.1 + 's'">
+        <div class="list-icon"></div>
+        {{ list.name }}
+      </li>
+      }
     </ul>
   </nav>
+
   <div class="sidebar__footer">
-    <button>+ Nueva lista</button>
+    <button class="animate-fadeIn">
+      <span class="plus-icon">+</span>
+      Nueva lista
+    </button>
   </div>
 </div>

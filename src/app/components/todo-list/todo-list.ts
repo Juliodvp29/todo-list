@@ -1,13 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TaskItem } from "../task-item/task-item";
-
-interface Task {
-  id: number;
-  title: string;
-  completed: boolean;
-}
+import { Task, TaskItem } from "../task-item/task-item";
 
 @Component({
   selector: 'app-todo-list',
@@ -15,53 +9,129 @@ interface Task {
   templateUrl: './todo-list.html',
   styleUrl: './todo-list.scss'
 })
-export class TodoList {
+export class TodoList implements OnInit {
+  @ViewChild('taskInput') taskInput!: ElementRef<HTMLInputElement>;
 
   newTaskTitle = '';
+  tasks: Task[] = [];
+  private readonly STORAGE_KEY = 'todolist-tasks';
 
-  tasks: Task[] = [
-    {
-      id: 1,
-      title: 'Task 1',
-      completed: false,
-    },
-    {
-      id: 2,
-      title: 'Task 2',
-      completed: false,
-    },
-    {
-      id: 3,
-      title: 'Task 3',
-      completed: false,
-    },
-  ];
+  ngOnInit() {
+    this.loadTasks();
+  }
 
+  private loadTasks() {
+    try {
+      const savedTasks = localStorage.getItem(this.STORAGE_KEY);
+      if (savedTasks) {
+        this.tasks = JSON.parse(savedTasks).map((task: any) => ({
+          ...task,
+          createdAt: task.createdAt ? new Date(task.createdAt) : new Date()
+        }));
+      } else {
+        this.tasks = [
+          {
+            id: 1,
+            title: 'Bienvenido a TaskFlow',
+            completed: false,
+            createdAt: new Date()
+          },
+          {
+            id: 2,
+            title: 'Marca esta tarea como completada',
+            completed: false,
+            createdAt: new Date()
+          },
+          {
+            id: 3,
+            title: 'Elimina esta tarea si quieres',
+            completed: false,
+            createdAt: new Date()
+          }
+        ];
+        this.saveTasks();
+      }
+    } catch (error) {
+      console.error('Error loading tasks from localStorage:', error);
+      this.tasks = [];
+    }
+  }
 
-  addTask(task: string) {
+  private saveTasks() {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.tasks));
+    } catch (error) {
+      console.error('Error saving tasks to localStorage:', error);
+    }
+  }
+
+  private generateId(): number {
+    return Math.max(0, ...this.tasks.map(t => t.id)) + 1;
+  }
+
+  addTask() {
+    const title = this.newTaskTitle.trim();
+    if (!title) return;
 
     const newTask: Task = {
-      id: this.tasks.length + 1,
-      title: task,
+      id: this.generateId(),
+      title: title,
       completed: false,
+      createdAt: new Date()
     };
-    this.tasks.push(newTask);
+
+    this.tasks.unshift(newTask);
+    this.newTaskTitle = '';
+    this.saveTasks();
+
+    setTimeout(() => {
+      if (this.taskInput) {
+        this.taskInput.nativeElement.focus();
+      }
+    }, 100);
   }
 
   removeTask(id: number) {
     this.tasks = this.tasks.filter(task => task.id !== id);
+    this.saveTasks();
   }
 
-  updateTask(id: number, task: Task) {
-    this.tasks = this.tasks.map(task => task.id === id ? task : task);
+  updateTask(id: number, updatedTask: Task) {
+    const index = this.tasks.findIndex(task => task.id === id);
+    if (index !== -1) {
+      this.tasks[index] = { ...updatedTask };
+      this.saveTasks();
+    }
   }
 
-  getTasks() {
+  onKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.addTask();
+    }
+  }
+
+  getCompletedCount(): number {
+    return this.tasks.filter(task => task.completed).length;
+  }
+
+  getTasks(): Task[] {
     return this.tasks;
   }
 
-  getTask(id: number) {
+  getTask(id: number): Task | undefined {
     return this.tasks.find(task => task.id === id);
   }
 
+  clearCompleted() {
+    this.tasks = this.tasks.filter(task => !task.completed);
+    this.saveTasks();
+  }
+
+  toggleAll() {
+    const allCompleted = this.tasks.every(task => task.completed);
+    this.tasks.forEach(task => {
+      task.completed = !allCompleted;
+    });
+    this.saveTasks();
+  }
 }

@@ -1,11 +1,39 @@
 <div class="task-list">
-
-  @for (item of tasks; track $index) {
-  <app-task-item [task]="item" (taskChange)="updateTask($index, $event)" (removeTask)="removeTask($index)" />
-  }
+  <div class="task-list__header">
+    <div class="task-count">
+      <span>Total:</span>
+      <span class="count">{{ tasks.length }}</span>
+      <span>•</span>
+      <span>Completadas:</span>
+      <span class="count">{{ getCompletedCount() }}</span>
+    </div>
+  </div>
 
   <div class="task-list__add">
-    <input type="text" placeholder="Agregar nueva tarea..." [(ngModel)]="newTaskTitle" />
-    <button (click)="addTask(newTaskTitle)">Agregar</button>
+    <div class="add-form">
+      <div class="input-wrapper">
+        <input type="text" placeholder="¿Qué necesitas hacer hoy?" [(ngModel)]="newTaskTitle"
+          (keypress)="onKeyPress($event)" #taskInput />
+      </div>
+      <button class="add-btn" (click)="addTask()" [disabled]="!newTaskTitle.trim()">
+        <span class="plus-icon">+</span>
+        Agregar
+      </button>
+    </div>
+  </div>
+
+  <div class="task-list__content">
+    @if (tasks.length === 0) {
+    <div class="task-list__empty">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">No hay tareas aún</div>
+      <div class="empty-description">¡Agrega tu primera tarea para comenzar!</div>
+    </div>
+    }
+
+    @for (task of tasks; track task.id; let i = $index) {
+    <app-task-item [task]="task" (taskChange)="updateTask(task.id, $event)" (removeTask)="removeTask($event)"
+      [style.animation-delay]="i * 0.1 + 's'" />
+    }
   </div>
 </div>

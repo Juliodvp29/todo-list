@@ -1,11 +1,31 @@
 <div class="app-container">
   <app-side-nav />
+
   <div class="main-content">
     <header class="main-header">
-      <h1>Mi lista actual</h1>
+      <div class="header-content">
+        <div class="header-title">
+          <h1>Mi Lista de Tareas</h1>
+          <div class="subtitle">Organiza tu día de manera eficiente</div>
+        </div>
+
+        <div class="header-actions">
+          <div class="date-info">
+            <span class="day">{{ getCurrentDay() }}</span>
+            <span class="date">{{ getCurrentDate() }}</span>
+          </div>
+
+          <button class="menu-toggle">
+            ☰
+          </button>
+        </div>
+      </div>
     </header>
+
     <main class="main-body">
-      <app-todo-list />
+      <div class="content-wrapper">
+        <app-todo-list />
+      </div>
     </main>
   </div>
 </div>

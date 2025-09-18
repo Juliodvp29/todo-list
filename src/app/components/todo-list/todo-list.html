@@ -1,0 +1,11 @@
+<div class="task-list">
+
+  @for (item of tasks; track $index) {
+  <app-task-item [task]="item" (taskChange)="updateTask($index, $event)" (removeTask)="removeTask($index)" />
+  }
+
+  <div class="task-list__add">
+    <input type="text" placeholder="Agregar nueva tarea..." [(ngModel)]="newTaskTitle" />
+    <button (click)="addTask(newTaskTitle)">Agregar</button>
+  </div>
+</div>

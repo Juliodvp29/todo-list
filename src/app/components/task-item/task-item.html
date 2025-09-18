@@ -1,0 +1,5 @@
+<div class="task-item">
+  <input type="checkbox" [(ngModel)]="task.completed" />
+  <span [class.completed]="task.completed">{{ task.title }}</span>
+  <button (click)="deleteTask()">✕</button>
+</div>

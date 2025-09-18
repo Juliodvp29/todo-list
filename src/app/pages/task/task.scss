@@ -1,0 +1,29 @@
+.app-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f3f3f3;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-header {
+  padding: 1rem;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.main-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
